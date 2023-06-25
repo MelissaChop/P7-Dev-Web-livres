@@ -1,6 +1,21 @@
 const express = require("express");
+const path = require("path");
+const stuffRoutes = require("./routes/stuff");
+const userRoutes = require("./routes/user");
+
+const mongoose = require("mongoose");
+const Thing = require("./models/thing");
+
+mongoose
+  .connect(
+    "mongodb+srv://P7:Grimoire@cluster0.u2fyhrh.mongodb.net/?retryWrites=true&w=majority",
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
 
 const app = express();
+app.use(express.json());
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -15,23 +30,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  console.log("Requête reçue !");
-  next();
-});
-
-app.use((req, res, next) => {
-  res.status(201);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.json({ message: "Votre requête a bien été reçue !" });
-  next();
-});
-
-app.use((req, res, next) => {
-  console.log("Réponse envoyée avec succès !");
-});
+app.use("/api/books", stuffRoutes);
+app.use("/api/auth", userRoutes);
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 module.exports = app;
