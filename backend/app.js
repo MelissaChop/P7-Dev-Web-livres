@@ -8,7 +8,7 @@ const Book = require("./models/book");
 
 mongoose
   .connect(
-    "mongodb+srv://P7:Grimoire@cluster0.u2fyhrh.mongodb.net/?retryWrites=true&w=majority",
+    "mongodb+srv://Melissa:Grimoire@cluster0.0zs8g8y.mongodb.net/Mon_vieux_Grimoire?retryWrites=true&w=majority",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
