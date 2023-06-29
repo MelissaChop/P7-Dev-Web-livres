@@ -1,3 +1,4 @@
+const { error } = require("console");
 const Book = require("../models/book");
 const fs = require("fs");
 
@@ -92,40 +93,43 @@ exports.addRating = (req, res, next) => {
   console.log(rating);*/
 
   Book.findOne({ _id: req.params.id })
-    .then((book) => {
-      if (!book) {
+    .then((Book) => {
+      if (!Book) {
         return res.status(404).json({ message: "Livre non trouvé." });
       }
-      console.log("Toto");
       // Vérification si l'utilisateur a déjà noté ce livre
-      const existingRating = book.ratings.find(
+      const existingRating = Book.ratings.find(
         (r) => r.userId === req.auth.userId
       );
+
       if (existingRating) {
         return res
           .status(409)
           .json({ message: "L'utilisateur a déjà noté ce livre." });
+      } else {
+        // Ajout de la note et mise à jour de la moyenne
+        const totalRating = Book.ratings.reduce((acc, r) => acc + r.grade, 0);
+        const newTotalRating = totalRating + rating;
+        const averageRating = newTotalRating / (Book.ratings.length + 1);
+
+        /* console.log(rating);*/
+
+        Book.ratings.push({ userId: req.auth.userId, grade: rating });
+        Book.averageRating = averageRating;
+
+        Book.save()
+          .then((updatedBook) => {
+            res.status(200).json({ message: "Rating ajoutée!", updatedBook });
+          })
+          .catch((error) => {
+            res.status(409).json({ error });
+          });
       }
-
-      /*const filename = book.imageUrl.split("/images/")[1];
-      fs.unlink(`images/${filename}`, () => {*/
-      // Ajout de la note et mise à jour de la moyenne
-      const totalRating = book.ratings.reduce((acc, r) => acc + r.grade, 0);
-      const newTotalRating = totalRating + rating;
-      const averageRating = newTotalRating / (book.ratings.length + 1);
-
-      book.ratings.push({ userId: req.auth.userId, grade });
-      book.averageRating = averageRating;
-
-      book
-        .save()
-        .then((updatedBook) => {
-          res.status(200).json({ message: "Rating ajoutée!", updatedBook });
-        })
-        .catch((error) => res.status(500).json({ error }));
-      /*});*/
     })
-    .catch((error) => res.status(500).json({ error }));
+    .catch((error) => {
+      console.log(error);
+      res.status(500).json({ error });
+    });
 };
 
 exports.getBestBooks = (req, res, next) => {
