@@ -24,8 +24,8 @@ exports.createBook = (req, res, next) => {
 exports.getOneBook = (req, res, next) => {
   /*FAIT*/
   Book.findOne({ _id: req.params.id })
-    .then((book) => res.status(200).json({ book }))
-    .catch((error) => res.status(404).json({ error }));
+    .then((book) => res.status(200).json(book))
+    .catch((error) => res.status(404).json(error));
 };
 
 exports.modifyBook = (req, res, next) => {
