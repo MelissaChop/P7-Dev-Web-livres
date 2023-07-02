@@ -1,6 +1,6 @@
 const multer = require("multer");
 const sharp = require("sharp");
-const express = require("express");
+const fs = require("fs");
 
 const MIME_TYPES = {
   "image/jpg": "jpg",
@@ -16,20 +16,29 @@ const storage = multer.diskStorage({
   filename: (req, file, callback) => {
     const name = file.originalname.split(" ").join("_");
     const extension = MIME_TYPES[file.mimetype];
-    callback(null, name + Date.now() + "." + extension);
+    const uniqueFileName = `${name}_${Date.now()}.${extension}`;
+    callback(null, uniqueFileName);
   },
 });
 
-const upload = multer({ storage: storage }).single("image");
+const upload = multer({ storage }).single("image");
+
+/* Conversion au format .webp*/
 
 const convertToWebP = (file) => {
+  const outputPath = file.replace(/\.[^.]+$/, ".webp"); // Chemin de sortie unique pour la version convertie
+
   sharp(file)
     .webp()
-    .toFile("file.webp", function (err, info) {
+    .toFile(outputPath, function (err, info) {
       if (err) {
-        console.log(err);
+        console.error("Error converting image to webp:", err);
       } else {
-        console.log(info);
+        console.log("Image converted to webp:", info);
+        // Suppression du fichier original après la conversion réussie
+        if (fs.existsSync(file)) {
+          fs.unlinkSync(file);
+        }
       }
     });
 };
@@ -46,10 +55,12 @@ module.exports = (req, res, next) => {
     if (req.file) {
       // Appeler la fonction de conversion si un fichier est présent
       convertToWebP(req.file.path);
+
+      // Mise à jour du chemin du fichier dans la requête pour refléter le nouveau fichier converti
+      req.file.path = req.file.path.replace(/\.[^.]+$/, ".webp");
     }
 
     // Passer à l'étape suivante du middleware
     next();
   });
 };
-/*  A CORRIGER*/
