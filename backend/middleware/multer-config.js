@@ -26,15 +26,16 @@ const upload = multer({ storage }).single("image");
 /* Conversion au format .webp*/
 
 const convertToWebP = (file) => {
-  const outputPath = file.replace(/\.[^.]+$/, ".webp"); // Chemin de sortie unique pour la version convertie
+  // Chemin de sortie unique pour la version convertie
+  const outputPath = file.replace(/\.[^.]+$/, ".webp");
 
   sharp(file)
     .webp()
-    .toFile(outputPath, function (err, info) {
-      if (err) {
-        console.error("Error converting image to webp:", err);
+    .toFile(outputPath, function (error, info) {
+      if (error) {
+        console.error("Erreur de conversion du fichier au format webp", error);
       } else {
-        console.log("Image converted to webp:", info);
+        console.log("Image converti au format webp", info);
         // Suppression du fichier original après la conversion réussie
         if (fs.existsSync(file)) {
           fs.unlinkSync(file);
@@ -44,19 +45,21 @@ const convertToWebP = (file) => {
 };
 
 module.exports = (req, res, next) => {
-  upload(req, res, function (err) {
-    if (err) {
+  upload(req, res, function (error) {
+    if (error) {
       // Gérer les erreurs lors du téléchargement du fichier
       return res
         .status(400)
-        .json({ error: "An error occurred during upload." });
+        .json({
+          error: "Une erreur s'est produite pendant le téléchargement.",
+        });
     }
 
     if (req.file) {
       // Appeler la fonction de conversion si un fichier est présent
       convertToWebP(req.file.path);
 
-      // Mise à jour du chemin du fichier dans la requête pour refléter le nouveau fichier converti
+      // Mise à jour du chemin du fichier dans la requête par le nouveau fichier converti
       req.file.path = req.file.path.replace(/\.[^.]+$/, ".webp");
     }
 
