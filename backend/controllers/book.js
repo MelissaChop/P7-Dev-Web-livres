@@ -123,7 +123,7 @@ exports.addRating = (req, res, next) => {
 
         Book.save()
           .then((updatedBook) => {
-            res.status(200).json({ message: "Rating ajoutée!", updatedBook });
+            res.status(200).json(updatedBook);
           })
           .catch((error) => {
             res.status(409).json({ error });
