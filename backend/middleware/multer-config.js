@@ -30,7 +30,7 @@ const upload = multer({ storage }).single("image");
 const convertToWebP = (file) => {
   return new Promise((resolve, reject) => {
     // Chemin de sortie unique pour la version convertie
-    const outputPath = file.replace(/\.[^.]+$/, ".webp");
+    const outputPath = file.replace(/\\/g, "/").replace(/\.[^.]+$/, ".webp");
 
     sharp(file)
       .webp()
