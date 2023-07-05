@@ -2,6 +2,7 @@ const express = require("express");
 const path = require("path");
 const bookRoutes = require("./routes/book");
 const userRoutes = require("./routes/user");
+const helmet = require("helmet");
 
 require("dotenv").config();
 
@@ -19,6 +20,11 @@ mongoose
 
 const app = express();
 app.use(express.json());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false,
+  })
+);
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");

@@ -21,7 +21,6 @@ module.exports = (req, res, next) => {
       })
       .catch((error) => {
         console.error(error);
-        next();
       });
   } else {
     next();
