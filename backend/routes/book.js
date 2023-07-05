@@ -2,7 +2,7 @@ const express = require("express");
 const auth = require("../middleware/auth");
 const multer = require("../middleware/multer-config");
 const router = express.Router();
-const { convertToWebp } = require("../middleware/multer-config");
+const convertToWebp = require("../middleware/sharp-retail");
 
 const bookCtrl = require("../controllers/book");
 
