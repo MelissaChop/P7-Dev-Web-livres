@@ -9,10 +9,11 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const Book = require("./models/book");
 
-const mongodbURI = process.env.MONGODB_URI;
-
 mongoose
-  .connect(mongodbURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(
+    `mongodb+srv://${process.env.LOGIN}:${process.env.PASSWORD}@${process.env.CLUSTER}/${process.env.DATABASE}?retryWrites=true&w=majority`,
+    { useNewUrlParser: true, useUnifiedTopology: true }
+  )
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 
