@@ -47,12 +47,15 @@ exports.modifyBook = (req, res, next) => {
       if (book.userId !== req.auth.userId) {
         res.status(401).json({ message: "Non autorisé!" });
       } else {
-        Book.updateOne(
-          { _id: req.params.id },
-          { ...bookObject, _id: req.params.id }
-        )
-          .then(() => res.status(200).json({ message: "Livre modifié!" }))
-          .catch((error) => res.status(500).json({ error }));
+        const imageToDelete = book.imageUrl.split("/images/")[1];
+        fs.unlink(`images/${imageToDelete}`, () => {
+          Book.updateOne(
+            { _id: req.params.id },
+            { ...bookObject, _id: req.params.id }
+          )
+            .then(() => res.status(200).json({ message: "Livre modifié!" }))
+            .catch((error) => res.status(500).json({ error }));
+        });
       }
     })
     .catch((error) => {
