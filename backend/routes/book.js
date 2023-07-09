@@ -15,5 +15,3 @@ router.get("/:id", bookCtrl.getOneBook);
 router.get("/", bookCtrl.getAllBook);
 
 module.exports = router;
-
-/*  FAIT */

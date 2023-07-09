@@ -2,7 +2,6 @@ const Book = require("../models/book");
 const fs = require("fs");
 
 exports.createBook = (req, res, next) => {
-  /*FAIT*/
   const bookObject = JSON.parse(req.body.book);
   delete bookObject._id;
   delete bookObject._userId;
@@ -15,7 +14,6 @@ exports.createBook = (req, res, next) => {
     averageRating: 0,
     ratings: [],
   });
-  /*console.log(req.file);*/
 
   book
     .save()
@@ -24,15 +22,12 @@ exports.createBook = (req, res, next) => {
 };
 
 exports.getOneBook = (req, res, next) => {
-  /*FAIT*/
   Book.findOne({ _id: req.params.id })
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(404).json(error));
 };
 
 exports.modifyBook = (req, res, next) => {
-  /*FAIT*/
-
   Book.findOne({ _id: req.params.id }).then((book) => {
     const bookObject = req.file
       ? {
@@ -74,7 +69,6 @@ exports.modifyBook = (req, res, next) => {
 };
 
 exports.deleteBook = (req, res, next) => {
-  /*FAIT*/
   Book.findOne({ _id: req.params.id })
     .then((book) => {
       if (book.userId != req.auth.userId) {
@@ -92,14 +86,12 @@ exports.deleteBook = (req, res, next) => {
 };
 
 exports.getAllBook = (req, res, next) => {
-  /*FAIT*/
   Book.find()
     .then((books) => res.status(200).json(books))
     .catch((error) => res.status(400).json({ error }));
 };
 
 exports.addRating = (req, res, next) => {
-  /*FAIT*/
   const rating = parseFloat(req.body.rating);
 
   // Vérification de la plage de note
@@ -108,8 +100,6 @@ exports.addRating = (req, res, next) => {
       .status(400)
       .json({ message: "La note doit être comprise entre 0 et 5." });
   }
-  /*console.log(req.params.id);
-  console.log(rating);*/
 
   Book.findOne({ _id: req.params.id })
     .then((Book) => {
@@ -130,8 +120,6 @@ exports.addRating = (req, res, next) => {
         const totalRating = Book.ratings.reduce((acc, r) => acc + r.grade, 0);
         const newTotalRating = totalRating + rating;
         const averageRating = newTotalRating / (Book.ratings.length + 1);
-
-        /* console.log(rating);*/
 
         Book.ratings.push({ userId: req.auth.userId, grade: rating });
         Book.averageRating = averageRating;
@@ -160,5 +148,3 @@ exports.getBestBooks = (req, res, next) => {
       res.status(500).json({ error: "Une erreur s'est produite" })
     );
 };
-
-/* FAIT*/
